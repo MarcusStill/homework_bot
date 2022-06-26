@@ -30,8 +30,6 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
-bot = telegram.Bot(token=TELEGRAM_TOKEN)
-
 
 def send_message(bot, message):
     """Отправляет сообщение в telegram"""
@@ -42,26 +40,25 @@ def send_message(bot, message):
     except TelegramError as error:
         message_error = f'Ошибка при выполении функции send_message: {error}'
         logging.error(message_error)
-        raise telegram.error.TelegramError(error)
+        raise TelegramError(message_error)
 
 
 def get_api_answer(current_timestamp):
     """Делает запрос к эндпоинту API"""
     logging.debug('Запуск функции get_api_answer')
-    response = ''
-    # timestamp = current_timestamp or int(time.time())
-    timestamp = 1653598800
+    timestamp = current_timestamp or int(time.time())
+    # timestamp = 1653598800
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if response.status_code != HTTPStatus.OK:
             message = 'Ошибка при выполнении запроса к серверу '
             logging.error(message)
+            raise Exception(message)
     except (requests.exceptions.RequestException, ConnectionResetError) as error:
-        message = f'Ошибка при выполении функции get_api_answer: {error}'
-        logging.error('Эндпоинт недоступен', error)
-        send_message(bot, message)
-        raise Exception(f'Error by requesting the endpoint: {error}')
+        message = f'Эндпоинт недоступен: {error}'
+        logging.error(message)
+        raise Exception(message)
     return response.json()
 
 
@@ -73,25 +70,28 @@ def check_response(response):
         raise Exception(f'{error} {type(response)}')
     if not isinstance(response, dict):
         raise TypeError(f'{error} {type(response)}')
-    if len(response['homeworks'][0]) == 6:
-        return response['homeworks'][0]
-    else:
-        message = f'Ошибка при выполении функции check_response. Ответ API не соответствует ожиданиям!'
-        logging.error(message)
-        send_message(bot, message)
+    if 'homeworks' not in response:
+        raise KeyError(error)
+    return response['homeworks'][0]
 
 
 def parse_status(homework):
     """Извлекает из информации о конкретной домашней работе статус этой работы"""
     logging.debug('Запуск функции parse_status')
-    homework_name = homework['homework_name']
-    homework_status = homework['status']
+    verdict = ''
+    try:
+        homework_name = homework['homework_name']
+    except Exception:
+        raise KeyError('В ответе API отсутствует homework_name')
+    try:
+        homework_status = homework['status']
+    except Exception:
+        raise KeyError('В ответе API отсутствует status')
     try:
         verdict = HOMEWORK_STATUSES[homework_status]
     except Exception as error:
         message = f'Получен некорректный ответ от API: {error}'
         logging.error(message)
-        send_message(bot, message)
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
@@ -108,6 +108,7 @@ def check_tokens():
 def main():
     """Основная логика работы бота."""
     logging.debug('Бот запущен')
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
     if check_tokens():
         logging.debug('Проверка токенов завершена успешно.')
     else:
