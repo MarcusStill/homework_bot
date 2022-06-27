@@ -55,7 +55,8 @@ def get_api_answer(current_timestamp):
             message = 'Ошибка при выполнении запроса к серверу '
             logging.error(message)
             raise Exception(message)
-    except (requests.exceptions.RequestException, ConnectionResetError) as error:
+    except (requests.exceptions.RequestException,
+            ConnectionResetError) as error:
         message = f'Эндпоинт недоступен: {error}'
         logging.error(message)
         raise Exception(message)
@@ -76,7 +77,8 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной домашней работе статус этой работы"""
+    """Извлекает из информации о конкретной
+    домашней работе статус этой работы"""
     logging.debug('Запуск функции parse_status')
     verdict = ''
     try:
