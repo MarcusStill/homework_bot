@@ -32,7 +32,7 @@ HOMEWORK_STATUSES = {
 
 
 def send_message(bot, message):
-    """Отправляет сообщение в telegram"""
+    """Отправляет сообщение в telegram."""
     logging.debug('Запуск функции send_message')
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
@@ -44,7 +44,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    """Делает запрос к эндпоинту API"""
+    """Делает запрос к эндпоинту API."""
     logging.debug('Запуск функции get_api_answer')
     timestamp = current_timestamp or int(time.time())
     # timestamp = 1653598800
@@ -64,7 +64,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """Проверяет ответ API на корректность"""
+    """Проверяет ответ API на корректность."""
     logging.debug('Запуск функции check_response')
     error = 'Ответ API не соответствует ожиданиям!'
     if response is None:
@@ -77,8 +77,10 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной
-    домашней работе статус этой работы"""
+    """
+    Извлекает из информации о конкретной
+    домашней работе статус этой работы.
+    """
     logging.debug('Запуск функции parse_status')
     verdict = ''
     try:
@@ -98,7 +100,7 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения"""
+    """Проверяет доступность переменных окружения."""
     logging.debug('Запуск функции check_tokens')
     return all((
         PRACTICUM_TOKEN,
