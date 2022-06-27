@@ -77,10 +77,8 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """
-    Извлекает из информации о конкретной
-    домашней работе статус этой работы.
-    """
+    """Извлекает из информации о конкретной
+    домашней работе статус этой работы."""
     logging.debug('Запуск функции parse_status')
     verdict = ''
     try:
@@ -116,7 +114,7 @@ def main():
     if check_tokens():
         logging.debug('Проверка токенов завершена успешно.')
     else:
-        message = f'При проверке токенов произошла ошибка!'
+        message = 'При проверке токенов произошла ошибка!'
         logging.critical(message)
         send_message(bot, message)
         sys.exit(message)
@@ -132,7 +130,7 @@ def main():
                 send_message(bot, message)
                 status_homework = message
             else:
-                message = f'Статус работы не обновился'
+                message = 'Статус работы не обновился'
                 logging.info(message)
             current_timestamp = response.get('current_date')
         except Exception as error:
