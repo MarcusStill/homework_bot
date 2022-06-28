@@ -47,7 +47,6 @@ def get_api_answer(current_timestamp):
     """Делает запрос к эндпоинту API."""
     logging.debug('Запуск функции get_api_answer')
     timestamp = current_timestamp or int(time.time())
-    # timestamp = 1653598800
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -120,8 +119,7 @@ def main():
         logging.critical(message)
         send_message(bot, message)
         sys.exit(message)
-    # current_timestamp = int(time.time())
-    current_timestamp = 16535988000
+    current_timestamp = int(time.time())
     status_homework = ''
     while True:
         try:
